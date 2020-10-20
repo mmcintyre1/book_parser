@@ -35,8 +35,9 @@ def get_text_from_document(doc):
 
 
 def get_stats(text):
-    print(textstat.lexicon_count(text, removepunct=True))
-    print(textstat.text_standard(text, float_output=False))
+    print(f"Word Count: {textstat.lexicon_count(text, removepunct=True)}")
+    print(f"Flesh-Kincaid Level: {textstat.flesch_kincaid_grade(text)}")
+    print(f"Reading Level Across Multiple Tests: {textstat.text_standard(text, float_output=False)}")
 
 
 def main():

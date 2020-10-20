@@ -1,0 +1,8 @@
+beautifulsoup4==4.9.3
+bs4==0.0.1
+EbookLib==0.17.1
+lxml==4.6.1
+Pyphen==0.9.5
+six==1.15.0
+soupsieve==2.0.1
+textstat==0.6.2
