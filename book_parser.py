@@ -35,7 +35,8 @@ SECTION_BLACKLIST = (
     'acknowledgment',
     'about the author',
     'about the publisher',
-    'also by'
+    'also by',
+    'index'
 )
 
 
@@ -94,7 +95,7 @@ def main():
 
     # helpful to see the 'chapters' that are returned as text so these can hopefully
     # be removed in the future for a more accurate count
-    print("\n".join([t[:100] for t in filtered_text]))
+    print("\n".join([t[:150] for t in filtered_text]))
     get_stats(" ".join(filtered_text))
 
 
