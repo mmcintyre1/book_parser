@@ -1,11 +1,18 @@
 from bs4 import BeautifulSoup
 import ebooklib
 from ebooklib import epub
+import pathlib
+import sys
 import textstat
 
 
-BOOK_IN = r"C:\Users\Mike\Desktop\reading_books\2020\A Fans Notes [1968] (Frederick Exley)\A Fans Notes.epub"
-PARSING_BLACKLIST = [
+class BookTypeError(Exception):
+    pass
+
+
+# controls HTML exclusion elements to remove
+# from gathering fulltext for a marked up ebook
+HTML_BLACKLIST = [
     '[document]',
     'noscript',
     'header',
@@ -16,6 +23,19 @@ PARSING_BLACKLIST = [
     'input',
     'script',
 ]
+
+# controls the section elements to remove from the fulltext
+# output, such as copyright page or acknowledgments
+# this needs to stay a tuple to be ingested with startswith()
+SECTION_BLACKLIST = (
+    'contents',
+    'copyright',
+    'dedication',
+    'acknowledgment',
+    'about the author',
+    'about the publisher',
+    'also by'
+)
 
 
 def get_documents(book):
@@ -31,26 +51,46 @@ def get_text_from_document(doc):
     return " ".join([
         t.strip()
         for t in text
-        if t.parent.name not in PARSING_BLACKLIST and t.strip()
+        if t.parent.name not in HTML_BLACKLIST and t.strip()
     ])
+
+
+def parse_epub(book_location):
+    book = epub.read_epub(book_location)
+    documents = get_documents(book)
+    return [get_text_from_document(doc) for doc in documents if doc]
+
+
+def parse_pdf(book_location):
+    return ''
 
 
 def get_stats(text):
     print(f"Word Count: {textstat.lexicon_count(text, removepunct=True)}")
-    print(f"Flesh-Kincaid Level: {textstat.flesch_kincaid_grade(text)}")
+    print(f"Flesh-Kincaid Score: {textstat.flesch_reading_ease(text)}")
+    print(f"Flesh-Kincaid Grade Level: {textstat.flesch_kincaid_grade(text)}")
     print(f"Reading Level Across Multiple Tests: {textstat.text_standard(text, float_output=False)}")
 
 
 def main():
-    book = epub.read_epub(BOOK_IN)
-    documents = get_documents(book)
-    all_text = [get_text_from_document(doc) for doc in documents if doc]
+    book_in = pathlib.Path(sys.argv[1])
+    if book_in.suffix == '.epub':
+        all_text = parse_epub(book_in)
+    elif book_in.suffix == '.pdf':
+        all_text = parse_pdf(book_in)
+    else:
+        raise BookTypeError(f"{book_in.suffix} not a valid file extension.")
+
+    filtered_text = [
+        t
+        for t in all_text
+        if t and not t.lower().startswith(SECTION_BLACKLIST)
+    ]
 
     # helpful to see the 'chapters' that are returned as text so these can hopefully
     # be removed in the future for a more accurate count
-    print([t[:50] for t in all_text])
-
-    get_stats(" ".join(all_text))
+    print("\n".join([t[:100] for t in filtered_text]))
+    get_stats(" ".join(filtered_text))
 
 
 if __name__ == '__main__':
