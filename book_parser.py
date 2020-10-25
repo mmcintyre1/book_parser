@@ -1,8 +1,10 @@
 from bs4 import BeautifulSoup
+import collections
 import ebooklib
 from ebooklib import epub
 import pathlib
 from PyPDF2 import PdfFileReader
+import string
 import sys
 import textstat
 
@@ -73,6 +75,26 @@ def parse_pdf(book_location):
     ]
 
 
+def create_word_count(text):
+    cleaned_words = remove_punctuation(text)
+    c = collections.Counter(cleaned_words)
+    return c
+
+
+def remove_punctuation(text, normalize_case=True, word_length=4):
+    table = str.maketrans('', '', string.punctuation)
+    stripped = [
+        clean_text
+        for w in text.split()
+        if len(clean_text := w.translate(table)) >= word_length
+    ]
+
+    if normalize_case:
+        return [t.lower() for t in stripped]
+
+    return stripped
+
+
 def get_stats(text):
     word_count = textstat.lexicon_count(text, removepunct=True)
     print(f"Word Count: {word_count}")
@@ -99,8 +121,10 @@ def main():
 
     # helpful to see the 'chapters' that are returned as text so these can hopefully
     # be removed in the future for a more accurate count
-    print("\n".join([t[:150] for t in filtered_text]))
+    # print("\n".join([t[:150] for t in filtered_text]))
     get_stats(" ".join(filtered_text))
+    word_count = create_word_count(" ".join(filtered_text))
+    print(word_count.most_common(20))
 
 
 if __name__ == '__main__':
