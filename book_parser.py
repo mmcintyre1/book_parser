@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 import ebooklib
 from ebooklib import epub
 import pathlib
+from PyPDF2 import PdfFileReader
 import sys
 import textstat
 
@@ -62,7 +63,11 @@ def parse_epub(book_location):
 
 
 def parse_pdf(book_location):
-    return ''
+    pdf = PdfFileReader(str(book_location))
+    return [
+        page.extractText()
+        for page in pdf.pages
+    ]
 
 
 def get_stats(text):
