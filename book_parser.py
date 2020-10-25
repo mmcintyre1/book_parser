@@ -39,6 +39,8 @@ SECTION_BLACKLIST = (
     'index'
 )
 
+READING_SPEED = 250
+
 
 def get_documents(book):
     return [
@@ -72,7 +74,9 @@ def parse_pdf(book_location):
 
 
 def get_stats(text):
-    print(f"Word Count: {textstat.lexicon_count(text, removepunct=True)}")
+    word_count = textstat.lexicon_count(text, removepunct=True)
+    print(f"Word Count: {word_count}")
+    print(f"Time to Read at {READING_SPEED} WPM: {(word_count / READING_SPEED) / 60:.2f} hours")
     print(f"Flesh-Kincaid Score: {textstat.flesch_reading_ease(text)}")
     print(f"Flesh-Kincaid Grade Level: {textstat.flesch_kincaid_grade(text)}")
     print(f"Reading Level Across Multiple Tests: {textstat.text_standard(text, float_output=False)}")
