@@ -140,9 +140,13 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
-.idea/.gitignore
-.idea/inspectionProfiles/
-.idea/misc.xml
-.idea/modules.xml
-.idea/vcs.xml
-.idea/word_counter.iml
+.idea
+#.idea/.gitignore
+#.idea/inspectionProfiles/
+#.idea/misc.xml
+#.idea/modules.xml
+#.idea/vcs.xml
+#.idea/word_counter.iml
+#.idea/book_parser.iml
+#.idea/codeStyles/
+#.idea/workspace.xml
